@@ -3,13 +3,13 @@ import NotFound from './views/404.vue'
 import Home from './views/Home.vue'
 import Main from './views/Main.vue'
 import Table from './views/nav1/Table.vue'
-import Form from './views/nav1/Form.vue'
-import user from './views/nav1/user.vue'
+import Form from './views/nav1/Form.vue'    
 import Page4 from './views/nav2/Page4.vue'
 import Page5 from './views/nav2/Page5.vue'
 import Page6 from './views/nav3/Page6.vue'
 import echarts from './views/charts/echarts.vue'
 
+import User from './views/user.vue'
 import Current from './views/current.vue'
 import Summary from './views/summary.vue'
 import Activity from './views/activity.vue'
@@ -18,6 +18,7 @@ import PicoTrades from './views/picoTrades.vue'
 import ClientTrades from './views/clientTrades.vue'
 import BridgeRecords from './views/bridgeRecords.vue'
 
+import EditUser from './views/editUser.vue'
 let routes = [{
         path: '/login',
         component: Login,
@@ -26,6 +27,12 @@ let routes = [{
     }, {
         path: '/404',
         component: NotFound,
+        name: '',
+        hidden: true
+    },
+     {
+        path: '/user/edit',
+        component: EditUser,
         name: '',
         hidden: true
     },
@@ -38,7 +45,7 @@ let routes = [{
         leaf: true,
         children: [{
             path: '/user',
-            component: Table,
+            component: User,
             name: '主页',
             hidden: true
         }, ]

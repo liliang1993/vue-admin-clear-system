@@ -125,7 +125,7 @@
           total: 0,
           page_size: 15,
           layout: "total, prev, pager, next, jumper"
-        }, 
+        }
       }
     },
     computed: {

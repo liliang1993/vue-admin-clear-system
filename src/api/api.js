@@ -49,6 +49,8 @@ export default {
     },
     getCurrentMtbase(params) {
       return server.post('/current/mtbase', params);
+    },
+    getUserlist(params){
+      return server.post('/user/list', params);
     }
-
 }
