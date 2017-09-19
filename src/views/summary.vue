@@ -427,8 +427,8 @@
             commonApi.getSummary_picoTrades(params).then((res)=>{
                     var data = JSON.parse(res.message);
                     this.pico_trades_tableData = [];
-                     for(var key in data["symnols"]){
-                          this.pico_trades_tableData.push(data["symnols"][key]);
+                     for(var key in data["symbols"]){
+                          this.pico_trades_tableData.push(data["symbols"][key]);
                      }
                     var totalRow ={
                         symbol:'Total',
@@ -455,8 +455,8 @@
             commonApi.getSummary_clientTrades(params).then((res)=>{
                     var data = JSON.parse(res.message);
                     this.client_trades_tableData = [];
-                     for(var key in data["symnols"]){
-                          this.client_trades_tableData.push(data["symnols"][key]);
+                     for(var key in data["symbols"]){
+                          this.client_trades_tableData.push(data["symbols"][key]);
                      }
                     var totalRow ={
                         symbol:'Total',
