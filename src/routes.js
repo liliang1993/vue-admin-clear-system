@@ -18,14 +18,12 @@ import PicoTrades from './views/picoTrades.vue'
 import ClientTrades from './views/clientTrades.vue'
 import BridgeRecords from './views/bridgeRecords.vue'
 
-let routes = [
-    {
+let routes = [{
         path: '/login',
         component: Login,
         name: '',
         hidden: true
-    },
-    {
+    }, {
         path: '/404',
         component: NotFound,
         name: '',
@@ -36,86 +34,99 @@ let routes = [
         path: '/',
         component: Home,
         name: 'User',
-        iconCls: 'el-icon-message',//图标样式class
-        leaf:true,
-        children: [
-            { path: '/user', component: Table, name: '主页', hidden: true },
-        ]
-    },
-    {
+        iconCls: 'el-icon-message', //图标样式class
+        leaf: true,
+        children: [{
+            path: '/user',
+            component: Table,
+            name: '主页',
+            hidden: true
+        }, ]
+    }, {
         path: '/',
         component: Home,
         name: 'Current',
-        leaf:true,
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/current', component:Current, name: '页面4' },
-        ]
-    },
-     {
+        children: [{
+            path: '/current',
+            component: Current,
+            name: '页面4'
+        }, ]
+    }, {
         path: '/',
         component: Home,
         name: 'Summary',
-        leaf:true,
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/summary', component:Summary, name: '页面4' },
-        ]
+        children: [{
+            path: '/summary',
+            component: Summary,
+            name: '页面4'
+        }, ]
     },
-    // {
-    //     path: '/',
-    //     component: Home,
-    //     name: 'Activity',
-    //     leaf:true,
-    //     iconCls: 'fa fa-id-card-o',
-    //     children: [
-    //         { path: '/activity', component:Activity, name: '页面4' },
-    //     ]
-    // },
     {
         path: '/',
         component: Home,
         name: 'Activity',
-        leaf:true,
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/funds', component:Funds, name: '页面4' },
-        ]
+        children: [{
+            path: '/activity',
+            component: Activity,
+            name: '页面4'
+        }, ]
     },
     {
         path: '/',
         component: Home,
-        name:  'PICO Trades',
-        leaf:true,
+        name: 'Funds',
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/picoTrades', component:PicoTrades, name: '页面4' }
-        ]
-    },
-    {
+        children: [{
+            path: '/funds',
+            component: Funds,
+            name: '页面4'
+        }, ]
+    }, {
         path: '/',
         component: Home,
-        name:  'Client Trades',
-        leaf:true,
+        name: 'PICO Trades',
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/clientTrades', component:ClientTrades, name: '页面4' }
-        ]
-    },
-    {
+        children: [{
+            path: '/picoTrades',
+            component: PicoTrades,
+            name: '页面4'
+        }]
+    }, {
         path: '/',
         component: Home,
-        name:  'Bridge Records',
-        leaf:true,
+        name: 'Client Trades',
+        leaf: true,
         iconCls: 'fa fa-id-card-o',
-        children: [
-            { path: '/bridgeRecords', component:BridgeRecords, name: '页面4' },
-        ]
-    },
-    {
+        children: [{
+            path: '/clientTrades',
+            component: ClientTrades,
+            name: '页面4'
+        }]
+    }, {
+        path: '/',
+        component: Home,
+        name: 'Bridge Records',
+        leaf: true,
+        iconCls: 'fa fa-id-card-o',
+        children: [{
+            path: '/bridgeRecords',
+            component: BridgeRecords,
+            name: '页面4'
+        }, ]
+    }, {
         path: '*',
         hidden: true,
-        redirect: { path: '/404' }
+        redirect: {
+            path: '/404'
+        }
     }
 ];
 

@@ -2,297 +2,501 @@
   <section>
     <!--工具条-->
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true" :model="filters">
+      <el-form :inline="true" :model="keywords">
         <el-form-item>
-          <el-input v-model="filters.name" placeholder="姓名"></el-input>
+          <el-date-picker
+          v-model="keywords.dateRange"
+          type="daterange"
+          align="right"
+          format='yyyy/MM/dd'
+          placeholder="选择日期范围"
+          :picker-options="pickerOptions2"
+          @change = "changeDate"
+
+          >
+        </el-date-picker>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" v-on:click="getUsers">查询</el-button>
+        <el-form-item label="Login:">
+          <el-select  v-model='keywords.login' @change= 'changeLogin'>  
+              <el-option
+              v-for ='item in loginOptions'
+              :key = 'item'
+              :label = 'item'
+              :value = 'item'
+              
+              >  
+              </el-option>      
+          </el-select>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleAdd">新增</el-button>
+         <el-form-item>
+          <el-button type="primary" v-on:click="renderTable">查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>
-
-    <!--列表-->
-    <el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
-      <el-table-column type="selection" width="55">
-      </el-table-column>
-      <el-table-column type="index" width="60">
-      </el-table-column>
-      <el-table-column prop="name" label="姓名" width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="sex" label="性别" width="100" :formatter="formatSex" sortable>
-      </el-table-column>
-      <el-table-column prop="age" label="年龄" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="birth" label="生日" width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="addr" label="地址" min-width="180" sortable>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
-        <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!--工具条-->
-    <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-      </el-pagination>
+    <el-col :span="24">
+          <bel-table
+          ref="table"
+          :configs="pico_trades_tableConfig"
+          >
+          </bel-table>
     </el-col>
-
-    <!--编辑界面-->
-    <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="性别">
-          <el-radio-group v-model="editForm.sex">
-            <el-radio class="radio" :label="1">男</el-radio>
-            <el-radio class="radio" :label="0">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="年龄">
-          <el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-        </el-form-item>
-        <el-form-item label="生日">
-          <el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input type="textarea" v-model="editForm.addr"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
-      </div>
-    </el-dialog>
-
-    <!--新增界面-->
-    <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-      <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="性别">
-          <el-radio-group v-model="addForm.sex">
-            <el-radio class="radio" :label="1">男</el-radio>
-            <el-radio class="radio" :label="0">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="年龄">
-          <el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-        </el-form-item>
-        <el-form-item label="生日">
-          <el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="地址">
-          <el-input type="textarea" v-model="addForm.addr"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
-      </div>
-    </el-dialog>
+     <el-col :span="24">
+          <bel-table
+          ref="table"
+          :configs="open_orders_tableConfig"
+          >
+          </bel-table>
+    </el-col>
   </section>
 </template>
 
 <script>
   import util from '../common/js/util'
   //import NProgress from 'nprogress'
-  import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../api/api';
+  import commonApi from '../api/api';
 
   export default {
     data() {
       return {
-        filters: {
-          name: ''
-        },
-        users: [],
-        total: 0,
-        page: 1,
-        listLoading: false,
-        sels: [],//列表选中列
+         pickerOptions2: {
+          shortcuts: [{
 
-        editFormVisible: false,//编辑界面是否显示
-        editLoading: false,
-        editFormRules: {
-          name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' }
-          ]
+            text: 'Today',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              end.setTime(end.getTime() + 3600 * 1000 * 24);
+              picker.$emit('pick', [start, end]);
+              this.pickDate();
+            }
+          }, {
+            text: 'Yesterday',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 );
+              picker.$emit('pick', [start, end]);
+              this.pickDate();
+            }
+          },{
+            text: 'This Week',
+            onClick:(picker)=>{
+              console.log('this',this);
+              const end = Date.parse(this.getMonday('e',0));
+              const start = Date.parse(this.getMonday('s',0));
+              picker.$emit('pick', [start, end]);
+              this.pickDate();
+            }
+          },{
+            text: 'Previous Week',
+            onClick:(picker)=>{
+              console.log('this',this);
+              const end = Date.parse(this.getMonday('e',-1));
+              const start = Date.parse(this.getMonday('s',-1));
+              picker.$emit('pick', [start, end]);
+              this.pickDate();
+            }
+          },{
+            text: 'Previous Month',
+            onClick:(picker)=>{
+              console.log('this',this);
+              const end = Date.parse(this.getMonth('e',-1));
+              const start = Date.parse(this.getMonth('s',-1));
+              picker.$emit('pick', [start, end]);
+              this.pickDate();
+            }
+          }],
         },
-        //编辑界面数据
-        editForm: {
-          id: 0,
-          name: '',
-          sex: -1,
-          age: 0,
-          birth: '',
-          addr: ''
+        keywords:{
+             dateRange:[],
+             login:''
         },
-
-        addFormVisible: false,//新增界面是否显示
-        addLoading: false,
-        addFormRules: {
-          name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' }
-          ]
-        },
-        //新增界面数据
-        addForm: {
-          name: '',
-          sex: -1,
-          age: 0,
-          birth: '',
-          addr: ''
-        }
-
+        pico_trades_tableData:[],
+        open_orders_tableData:[],
+        loginOptions:[],
+        pagination: {
+          current_page: 1,
+          total: 0,
+          page_size: 15,
+          layout: "total, prev, pager, next, jumper"
+        }, 
       }
     },
-    methods: {
-      //性别显示转换
-      formatSex: function (row, column) {
-        return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-      },
-      handleCurrentChange(val) {
-        this.page = val;
-        this.getUsers();
-      },
-      //获取用户列表
-      getUsers() {
-        let para = {
-          page: this.page,
-          name: this.filters.name
-        };
-        this.listLoading = true;
-        //NProgress.start();
-        getUserListPage(para).then((res) => {
-          this.total = res.data.total;
-          this.users = res.data.users;
-          this.listLoading = false;
-          //NProgress.done();
-        });
-      },
-      //删除
-      handleDel: function (index, row) {
-        this.$confirm('确认删除该记录吗?', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { id: row.id };
-          removeUser(para).then((res) => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getUsers();
-          });
-        }).catch(() => {
-
-        });
-      },
-      //显示编辑界面
-      handleEdit: function (index, row) {
-        this.editFormVisible = true;
-        this.editForm = Object.assign({}, row);
-      },
-      //显示新增界面
-      handleAdd: function () {
-        this.addFormVisible = true;
-        this.addForm = {
-          name: '',
-          sex: -1,
-          age: 0,
-          birth: '',
-          addr: ''
-        };
-      },
-      //编辑
-      editSubmit: function () {
-        this.$refs.editForm.validate((valid) => {
-          if (valid) {
-            this.$confirm('确认提交吗？', '提示', {}).then(() => {
-              this.editLoading = true;
-              //NProgress.start();
-              let para = Object.assign({}, this.editForm);
-              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-              editUser(para).then((res) => {
-                this.editLoading = false;
-                //NProgress.done();
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                });
-                this.$refs['editForm'].resetFields();
-                this.editFormVisible = false;
-                this.getUsers();
-              });
-            });
-          }
-        });
-      },
-      //新增
-      addSubmit: function () {
-        this.$refs.addForm.validate((valid) => {
-          if (valid) {
-            this.$confirm('确认提交吗？', '提示', {}).then(() => {
-              this.addLoading = true;
-              //NProgress.start();
-              let para = Object.assign({}, this.addForm);
-              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-              addUser(para).then((res) => {
-                this.addLoading = false;
-                //NProgress.done();
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                });
-                this.$refs['addForm'].resetFields();
-                this.addFormVisible = false;
-                this.getUsers();
-              });
-            });
-          }
-        });
-      },
-      selsChange: function (sels) {
-        this.sels = sels;
-      },
-      //批量删除
-      batchRemove: function () {
-        var ids = this.sels.map(item => item.id).toString();
-        this.$confirm('确认删除选中记录吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { ids: ids };
-          batchRemoveUser(para).then((res) => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getUsers();
-          });
-        }).catch(() => {
-
-        });
+    computed: {
+    pico_trades_tableConfig: {
+      get() {
+        return {
+          table: {
+            attr: {
+              data: this.pico_trades_tableData,
+              maxHeight: '100%',
+              border: false,
+              defaultSort: {
+                prop: 'user_id'
+              }
+            }
+          },
+          columns: [{
+            attr: {
+              prop: 'date',
+              label: 'Date',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'instrument',
+              label: 'instrument',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'item',
+              label: 'Item',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'amount',
+              label: 'Amount',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'detail',
+              label: 'Detail',
+              minWidth: 100,
+              align: 'center'
+            }
+          }]
+        }
       }
+    },
+     open_orders_tableConfig: {
+      get() {
+        return {
+          table: {
+            attr: {
+              data: this.open_orders_tableData,
+              maxHeight: '100%',
+              border: false,
+              defaultSort: {
+                prop: 'user_id'
+              }
+            }
+          },
+          columns: [{
+            attr: {
+              prop: 'symbol',
+              label: 'Symbol',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'Volume',
+              label: 'volume',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'average_price',
+              label: 'AveragePrice',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'closing_price',
+              label: 'ClosingPrice',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'float_profit',
+              label: 'FloatProfit ',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'swaps',
+              label: ' Rollover ',
+              minWidth: 100,
+              align: 'center'
+            }
+          },{
+            attr: {
+              prop: 'commission',
+              label: 'commission',
+              minWidth: 100,
+              align: 'center'
+            }
+          }]
+        }
+      }
+    }
+  },
+    methods: {
+        onChangeCurrentPage(pageNum){
+          this.pagination.current_page = pageNum;
+           this.renderTable();
+        },
+        /*dates为数字类型，0代表今日,-1代表昨日，1代表明日，返回yyyy-mm-dd格式字符串*/
+        getDate(dates) {
+            var dd = new Date();
+            var n = dates || 0;
+            dd.setDate(dd.getDate() + n);
+            var y = dd.getFullYear();
+            var m = dd.getMonth() + 1;
+            var d = dd.getDate();
+            m = m < 10 ? "0" + m: m;
+            d = d < 10 ? "0" + d: d;
+            var day = y + "-" + m + "-" + d;
+            return day;
+        },
+        //type为字符串类型，有两种选择，"s"代表开始,"e"代表结束，dates为数字类型，不传或0代表本周，-1代表上周，1代表下周
+        getMonday(type, dates) {
+            var now = new Date();
+            var nowTime = now.getTime();
+            var day = now.getDay();
+            var longTime = 24 * 60 * 60 * 1000;
+            var n = longTime * 7 * (dates || 0);
+            if (type == "s") {
+                var dd = nowTime - (day - 1) * longTime + n;
+            };
+            if (type == "e") {
+                var dd = nowTime + (7 - day) * longTime + n;
+            };
+            dd = new Date(dd);
+            var y = dd.getFullYear();
+            var m = dd.getMonth() + 1;
+            var d = dd.getDate();
+            m = m < 10 ? "0" + m: m;
+            d = d < 10 ? "0" + d: d;
+            var day = y + "-" + m + "-" + d;
+            return day;
+        },
+        getMonth(type, months) {
+            var d = new Date();
+            var year = d.getFullYear();
+            var month = d.getMonth() + 1;
+            if (Math.abs(months) > 12) {
+                months = months % 12;
+            };
+            if (months != 0) {
+                if (month + months > 12) {
+                    year++;
+                    month = (month + months) % 12;
+                } else if (month + months < 1) {
+                    year--;
+                    month = 12 + month + months;
+                } else {
+                    month = month + months;
+                };
+            };
+            month = month < 10 ? "0" + month: month;
+            var date = d.getDate();
+            var firstday = year + "-" + month + "-" + "01";
+            var lastday = "";
+            if (month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12") {
+                lastday = year + "-" + month + "-" + 31;
+            } else if (month == "02") {
+                if ((year % 4 == 0 && year % 100 != 0) || (year % 100 == 0 && year % 400 == 0)) {
+                    lastday = year + "-" + month + "-" + 29;
+                } else {
+                    lastday = year + "-" + month + "-" + 28;
+                };
+            } else {
+                lastday = year + "-" + month + "-" + 30;
+            };
+            var day = "";
+            if (type == "s") {
+                day = firstday;
+            } else {
+                day = lastday;
+            };
+            return day;
+        },
+        loadLogin(){
+            commonApi.getLogins().then((res)=>{
+                console.log('res',res);
+                var login_dict = JSON.parse(res.message);
+                if(login_dict.length>0){
+                     this.keywords.login =  login_dict[0];
+                     this.loginOptions = login_dict;
+                     this.DateRangeInit();
+                      this.renderTable();
+                }  
+            }).catch((err)=>{
+
+            })
+        },
+        pickDate(max,min){
+            console.log('max',max,min);
+            this.renderTable();
+        },
+        changeDate(date){
+          console.log('123',this.keywords.dateRange);
+            if(this.keywords.dateRange == undefined || this.keywords.dateRange[0] ==null||this.keywords.dateRange[1] ==null ){
+                return;
+            }
+            this.renderTable();
+        },
+        changeLogin(){
+            this.renderTable();
+        },
+        date_format(date){
+            var year = date.getFullYear();
+            var month = date.getMonth()+1;
+
+            var monthStr = month < 10 ? "0"+month : month+'';
+            var day = date.getDate();
+             var dayStr = day < 10? "0"+day : day+'';
+            return year+monthStr+dayStr;
+        },
+        DateRangeInit(){
+            var startTime = new Date();
+            var endTime = new Date(new Date().getTime() + 24*60*60*1000);
+            this.keywords.dateRange.push(startTime);
+            this.keywords.dateRange.push(endTime);
+        },
+        renderPicoTable(){
+           var fromTime = this.date_format(new Date(this.keywords.dateRange[0]));
+            var toTime = this.date_format(new Date(this.keywords.dateRange[1]));
+            var login = this.keywords.login;
+            var symbol = this.keywords.symbol;
+            console.log('login',login);
+            var params = {
+                login: login,
+                from: fromTime,
+                to: toTime,
+            }
+            commonApi.getActivity_pico(params).then((res)=>{
+                    var data = JSON.parse(res.message);
+                
+                    this.pico_trades_tableData = this.pico_traders_handler(data.activity);
+                        console.log('data',this.pico_trades_tableData);
+                    var totalRow ={
+                        date:'Total',
+                        instructment:'',
+                        item:'',
+                        amount: data.amount,
+                        detail:''
+                    };
+                    var openBalanceRow ={
+                        date:'',
+                        instructment:'',
+                        item:'Open Bal',
+                        amount: data.open_balance,
+                        detail:''
+                    }
+                    var closeBalanceRow ={
+                        date:'',
+                        instructment:'',
+                        item:'Close Bal',
+                        amount: data.close_balance,
+                        detail:''
+                    }
+                    this.pico_trades_tableData.push(totalRow,openBalanceRow,closeBalanceRow);
+                })
+        },
+        renderOpenOrdersTable(){
+            var fromTime = this.date_format(new Date(this.keywords.dateRange[0]));
+            var toTime = this.date_format(new Date(this.keywords.dateRange[1]));
+            var login = this.keywords.login;
+            var symbol = this.keywords.symbol;
+            console.log('login',login);
+            var params = {
+                login: login,
+                from: fromTime,
+                to: toTime,
+            }
+            commonApi.getActivity_open_orders(params).then((res)=>{
+                    var data = JSON.parse(res.message);
+                    this.open_orders_tableData = this.open_orders_handler(data.orders);
+                    var totalRow ={
+                        symbol:'Total',
+                        volume:'',
+                        average_price:'',
+                        closing_price:'',
+                        float_profit:'',
+                        swaps:data.swaps,
+                        commission: data.commission,
+                    };
+                    this.open_orders_tableData.push(totalRow);
+                })
+        },
+        isEmptyObject(obj){
+           for(var key in obj){
+             return false
+           };
+           return true
+        },
+        pico_traders_handler(obj){
+            console.log('obj',obj);
+            if(this.isEmptyObject(obj) ){
+              return [];
+            }
+            var group =[];
+            for(var date in obj){
+                var dict = obj[date];
+                var staticRows = [{
+                  date: date,
+                  instrument:'',
+                  item: 'deposit',
+                  amount: dict['deposit']
+                },{
+                  date: '',
+                  instrument:'',
+                  item: 'withdrawal',
+                  amount: dict['withdrawal']
+                }];
+                group.push.apply(group,staticRows);
+                console.log('group',group,dict['symbols']);
+                for(var symbol in dict['symbols']){
+                      var attrs = dict['symbols'][symbol];
+                      console.log('attr',attrs);
+                      var attrRows = [{
+                        date: '',
+                        instrument:symbol,
+                        item: 'profit',
+                        amount: attrs['profit']
+                      },{
+                        date: '',
+                        instrument:'',
+                        item: 'commission',
+                        amount: attrs['commission']
+                      },{
+                        date: '',
+                        instrument:'',
+                        item: 'swap',
+                        amount: attrs['swap']
+                      }];
+                      group.push.apply(group,attrRows);
+                }
+            }
+            return group;
+        },
+        open_orders_handler(obj){
+          var list =[];
+          for(var symbol in obj){
+              list.push(obj[symbol]);
+          }
+          return list;
+        },
+        renderTable(){
+          this.renderPicoTable();
+          this.renderOpenOrdersTable();
+        }
     },
     mounted() {
-      this.getUsers();
+       this.loadLogin(); 
     }
   }
 

@@ -1,0 +1,3 @@
+.el-picker-panel [slot=sidebar], .el-picker-panel__sidebar{
+  width:124px;
+}
