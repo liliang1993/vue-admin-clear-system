@@ -35,7 +35,10 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        PICO Trades
+    </el-col>  
+    <el-col :span="24" v-loading='pico_trades_loading'>
           <bel-table
           ref="table"
           :configs="tableConfig"
@@ -66,6 +69,7 @@
   export default {
     data() {
       return {
+        pico_trades_loading:false,
          pickerOptions2: {
           shortcuts: [{
 
@@ -374,12 +378,16 @@
                 symbol: symbol,
                 cur_page: this.pagination.current_page,
                 lp:''
-            }
+            };
+            this.pico_trades_loading = true;
             commonApi.getPicoTraders(params).then((res)=>{
+                    this.pico_trades_loading = false;
                     var data = JSON.parse(res.message);
                     console.log('data',data,data.rows);
                     this.tableData = data.rows;
                     this.pagination.total = data.total;
+                }).catch((err)=>{
+                  this.pico_trades_loading = false;
                 })
         }
     },

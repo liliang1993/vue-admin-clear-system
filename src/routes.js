@@ -3,7 +3,7 @@ import NotFound from './views/404.vue'
 import Home from './views/Home.vue'
 import Main from './views/Main.vue'
 import Table from './views/nav1/Table.vue'
-import Form from './views/nav1/Form.vue'    
+import Form from './views/nav1/Form.vue'
 import Page4 from './views/nav2/Page4.vue'
 import Page5 from './views/nav2/Page5.vue'
 import Page6 from './views/nav3/Page6.vue'
@@ -20,6 +20,10 @@ import BridgeRecords from './views/bridgeRecords.vue'
 
 import EditUser from './views/editUser.vue'
 let routes = [{
+        path: '/',
+        redirect: '/summary',
+        hidden: true
+    }, {
         path: '/login',
         component: Login,
         name: '',
@@ -29,8 +33,7 @@ let routes = [{
         component: NotFound,
         name: '',
         hidden: true
-    },
-     {
+    }, {
         path: '/user/edit',
         component: EditUser,
         name: '',
@@ -71,8 +74,7 @@ let routes = [{
             component: Summary,
             name: '页面4'
         }, ]
-    },
-    {
+    }, {
         path: '/',
         component: Home,
         name: 'Activity',
@@ -83,8 +85,7 @@ let routes = [{
             component: Activity,
             name: '页面4'
         }, ]
-    },
-    {
+    }, {
         path: '/',
         component: Home,
         name: 'Funds',

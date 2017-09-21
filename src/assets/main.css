@@ -1,3 +1,11 @@
 .el-picker-panel [slot=sidebar], .el-picker-panel__sidebar{
   width:124px;
 }
+
+.table-title{
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ccc;
+    padding:15px;
+    margin-top: 20px;
+}

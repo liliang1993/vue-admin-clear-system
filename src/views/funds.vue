@@ -27,12 +27,15 @@
               </el-option>      
           </el-select>
         </el-form-item>
-         <el-form-item>
+        <!--  <el-form-item>
           <el-button type="primary" v-on:click="renderTable">查询</el-button>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        Funds
+    </el-col>  
+    <el-col :span="24" v-loading='funds_loading'>
           <bel-table
           ref="table"
           :configs="tableConfig"
@@ -50,6 +53,7 @@
   export default {
     data() {
       return {
+        funds_loading:false,
          pickerOptions2: {
           shortcuts: [{
 
@@ -291,7 +295,9 @@
                 from: fromTime,
                 to: toTime,
             }
+            this.funds_loading = true;
             commonApi.getFunds(params).then((res)=>{
+                    this.funds_loading = false;
                     var data = JSON.parse(res.message);
                     console.log('data',data,data.rows);
                     this.tableData = data.funds;
@@ -303,6 +309,8 @@
                     };
                     this.tableData.push(totalRow);
                     this.pagination.total = data.total;
+                }).catch((err)=>{
+                   this.funds_loading = false;
                 })
         }
     },

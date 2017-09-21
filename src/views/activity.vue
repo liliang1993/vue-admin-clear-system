@@ -28,18 +28,21 @@
               </el-option>      
           </el-select>
         </el-form-item>
-         <el-form-item>
-          <el-button type="primary" v-on:click="renderTable">查询</el-button>
-        </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        PICO Trades
+    </el-col>  
+    <el-col :span="24" v-loading='pico_trades_loading'>
           <bel-table
           ref="table"
           :configs="pico_trades_tableConfig"
           >
           </bel-table>
     </el-col>
+    <el-col :span='24' class='table-title' v-loading='open_orders_loading'>
+        Open Orders
+    </el-col>  
      <el-col :span="24">
           <bel-table
           ref="table"
@@ -58,9 +61,10 @@
   export default {
     data() {
       return {
+        pico_trades_loading:false,
+        open_orders_loading:false,
          pickerOptions2: {
           shortcuts: [{
-
             text: 'Today',
             onClick(picker) {
               const end = new Date();
@@ -377,7 +381,9 @@
                 from: fromTime,
                 to: toTime,
             }
+                    this.pico_trades_loading = true;
             commonApi.getActivity_pico(params).then((res)=>{
+                    this.pico_trades_loading = true;
                     var data = JSON.parse(res.message);
                 
                     this.pico_trades_tableData = this.pico_traders_handler(data.activity);
@@ -404,6 +410,8 @@
                         detail:''
                     }
                     this.pico_trades_tableData.push(totalRow,openBalanceRow,closeBalanceRow);
+                }).then((err)=>{
+                    this.pico_trades_loading = false
                 })
         },
         renderOpenOrdersTable(){
@@ -417,7 +425,9 @@
                 from: fromTime,
                 to: toTime,
             }
+            this.open_orders_loading = true;
             commonApi.getActivity_open_orders(params).then((res)=>{
+              this.open_orders_loading = false;
                     var data = JSON.parse(res.message);
                     this.open_orders_tableData = this.open_orders_handler(data.orders);
                     var totalRow ={
@@ -430,6 +440,8 @@
                         commission: data.commission,
                     };
                     this.open_orders_tableData.push(totalRow);
+                }).catch((err)=>{
+                    this.open_orders_loading = false;
                 })
         },
         isEmptyObject(obj){

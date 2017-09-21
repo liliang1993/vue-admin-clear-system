@@ -1,9 +1,9 @@
 <template>
         <el-col :span="24" class='header'>
-            <el-col :span="6" class='logo-container'>
+            <el-col :span="4" class='logo-container'>
               <!--  <a class="logo" href="#"><img src="../assets/images/Logo.png"></a> -->
             </el-col>
-            <el-col :span="14"  :offset="4" >
+            <el-col :span="16"  :offset="4" >
                 <el-menu   theme="dark" :default-active="$route.path" class="el-menu-demo" mode="horizontal" unique-opened  router>
                     <template
                             v-for="(item,index) in $router.options.routes"

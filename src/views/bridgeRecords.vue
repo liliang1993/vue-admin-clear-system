@@ -15,7 +15,7 @@
           >
         </el-date-picker>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label='Login:'>
           <el-select  v-model='keywords.login' @change= 'changeLogin'>  
               <el-option
               v-for ='item in loginOptions'
@@ -27,10 +27,23 @@
               </el-option>      
           </el-select>
         </el-form-item>
-
+        <el-form-item  label='LP:'>
+              <el-input v-model='keywords.lp'>
+              </el-input>    
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" v-on:click="renderTable">查询</el-button>
+        </el-form-item>
       </el-form>
+    <!--   <el-col>
+          <el-button type="primary" v-on:click="renderTable">DOWN LOAD <i class='icon-'></i></el-button> 
+      </el-col>  -->
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        Bridge Records
+    </el-col>  
+    <el-col :span="24" v-loading='bridge_records_loading'>
           <bel-table
           ref="table"
           :configs="tableConfig"
@@ -61,6 +74,7 @@
   export default {
     data() {
       return {
+        bridge_records_loading:false,
          pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -304,6 +318,7 @@
         loadLogin(){
             commonApi.getLogins().then((res)=>{
                 console.log('res',res);
+                 this.DateRangeInit();
                 var login_dict = JSON.parse(res.message);
                 if(login_dict.length>0){
                      this.keywords.login =  login_dict[0];
@@ -339,7 +354,8 @@
         },
         DateRangeInit(){
             var startTime = new Date();
-            var endTime = new Date(new Date().getTime() + 24*60*60*1000);
+            var endTime = new Date(new
+             Date().getTime() + 24*60*60*1000);
             this.keywords.dateRange.push(startTime);
             this.keywords.dateRange.push(endTime);
         },
@@ -347,22 +363,28 @@
            var fromTime = this.date_format(new Date(this.keywords.dateRange[0]));
             var toTime = this.date_format(new Date(this.keywords.dateRange[1]));
             var login = this.keywords.login;
+            var lp = this.keywords.lp;
             var params = {
                 login: login,
                 from: fromTime,
                 to: toTime,
+                lp: lp,
                 cur_page: this.pagination.current_page
             }
+            this.bridge_records_loading = true;
             commonApi.getBridgeRecords(params).then((res)=>{
+                    this.bridge_records_loading = false;
                     var data = JSON.parse(res.message);
                     console.log('data',data,data.rows);
                     this.tableData = data.rows;
                     this.pagination.total = data.total;
+                }).catch((err)=>{
+                  this.bridge_records_loading = false;
                 })
         }
     },
     mounted() {
-        this.DateRangeInit();
+       
        this.loadLogin(); 
     }
   }

@@ -28,26 +28,32 @@
               </el-option>      
           </el-select>
         </el-form-item>
-         <el-form-item>
-          <el-button type="primary" v-on:click="renderTable">查询</el-button>
-        </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        PICO Trades
+    </el-col>  
+    <el-col :span="24" v-loading='pico_trades_loading'>
           <bel-table
           ref="table"
           :configs="pico_trades_tableConfig"
           >
           </bel-table>
     </el-col>
-     <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+       Client Trades
+    </el-col>  
+     <el-col :span="24" v-loading='client_trades_loading'>
           <bel-table
           ref="table"
           :configs="client_trades_tableConfig"
           >
           </bel-table>
     </el-col>
-     <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        Bridge Records
+    </el-col>  
+     <el-col :span="24" v-loading='bridge_records_loading'>
           <bel-table
           ref="table"
           :configs="bridge_records_tableConfig"
@@ -65,6 +71,9 @@
   export default {
     data() {
       return {
+        pico_trades_loading:false,
+        client_trades_loading:false,
+        bridge_records_loading:false,
          pickerOptions2: {
           shortcuts: [{
 
@@ -423,8 +432,10 @@
                 login: login,
                 from: fromTime,
                 to: toTime,
-            }
+            };
+             this.pico_trades_loading = true;
             commonApi.getSummary_picoTrades(params).then((res)=>{
+               this.pico_trades_loading = false;
                     var data = JSON.parse(res.message);
                     this.pico_trades_tableData = [];
                      for(var key in data["symbols"]){
@@ -439,6 +450,8 @@
                         close_pl: data.close_pl
                     };
                     this.pico_trades_tableData.push(totalRow);
+                }).catch((err)=>{
+                  this.pico_trades_loading = false;
                 })
         },
         renderClientTradesTable(){
@@ -451,8 +464,10 @@
                 login: login,
                 from: fromTime,
                 to: toTime,
-            }
+            };
+             this.client_trades_loading = true;
             commonApi.getSummary_clientTrades(params).then((res)=>{
+              this.client_trades_loading = false;
                     var data = JSON.parse(res.message);
                     this.client_trades_tableData = [];
                      for(var key in data["symbols"]){
@@ -467,6 +482,8 @@
                         close_pl: data.close_pl
                     };
                     this.client_trades_tableData.push(totalRow);
+                }).catch((err)=>{
+                  this.client_trades_loading = false;
                 })
         },
         renderBridgeRecordsTable(){
@@ -479,8 +496,10 @@
                 login: login,
                 from: fromTime,
                 to: toTime,
-            }
+            };
+            this.bridge_records_loading = true;
             commonApi.getSummary_bridgeRecords(params).then((res)=>{
+                    this.bridge_records_loading = false;
                     var data = JSON.parse(res.message);
                     this.bridge_records_tableData = [];
                      for(var key in data["symbols"]){
@@ -493,6 +512,8 @@
                         fees:data.fees
                     };
                     this.bridge_records_tableData.push(totalRow);
+                }).catch((err)=>{
+                    this.bridge_records_loading = false;
                 })
         },
         renderTable(){

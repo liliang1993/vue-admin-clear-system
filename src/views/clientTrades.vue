@@ -38,7 +38,10 @@
         </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+        Client Trades
+    </el-col>  
+    <el-col :span="24" v-loading='client_trades_loading'>
           <bel-table
           ref="table"
           :configs="tableConfig"
@@ -69,6 +72,7 @@
   export default {
     data() {
       return {
+        client_trades_loading:false,
          pickerOptions2: {
           shortcuts: [{
 
@@ -389,6 +393,7 @@
             var symbol = this.keywords.symbol;
             var client = this.keywords.client ==''? 0 : parseInt(this.keywords.client);
             console.log('login',login);
+            this.client_trades_loading = true;
             var params = {
                 login: login,
                 from: fromTime,
@@ -403,6 +408,9 @@
                     console.log('data',data,data.rows);
                     this.tableData = data.rows;
                     this.pagination.total = data.total;
+                     this.client_trades_loading = false;
+                }).catch(()=>{
+                     this.client_trades_loading = false;
                 })
         }
     },

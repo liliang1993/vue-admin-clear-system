@@ -15,12 +15,12 @@
               </el-option>      
           </el-select>
         </el-form-item>
-         <el-form-item>
-          <el-button type="primary" v-on:click="renderTable">查询</el-button>
-        </el-form-item>
       </el-form>
     </el-col>
-    <el-col :span="24">
+    <el-col :span='24' class='table-title'>
+       MT4 Base
+    </el-col>  
+    <el-col :span="24" v-loading='MT4_base_loading'>
           <bel-table
           ref="table"
           :configs="tableConfig"
@@ -38,6 +38,7 @@
   export default {
     data() {
       return {
+        MT4_base_loading:false,
         keywords:{
              login:''
         },
@@ -135,9 +136,14 @@
                 from: '0',
                 to: '0'
             }
+            this.tableData = [];
+            this.MT4_base_loading =true; 
             commonApi.getCurrentMtbase(params).then((res)=>{
+                    this.MT4_base_loading = false;
                     var data = JSON.parse(res.message);
                     this.tableData.push(data);
+                }).catch((err)=>{
+                  this.MT4_base_loading=false;
                 })
         }
     },

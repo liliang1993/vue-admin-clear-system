@@ -12,8 +12,8 @@ import Vuex from 'vuex'
 import routes from './routes'
 import 'font-awesome/css/font-awesome.min.css'
 import BelTable from 'vue-bel-table'
-import layer from 'vue-layer'
-Vue.prototype.$layer = layer(Vue);
+// import layer from 'vue-layer'
+// Vue.prototype.$layer = layer(Vue);
 
 import './assets/main.css'
 Vue.use(ElementUI)
